@@ -103,27 +103,27 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const musclePct = ((bodyData.muscle / bodyData.weight) * 100).toFixed(1)
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-y-auto">
       {/* Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-purple-900/10 rounded-full blur-[120px] animate-pulse-slow" />
         <div className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] bg-blue-900/10 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative h-screen flex flex-col">
+      <div className="relative min-h-screen flex flex-col">
         {/* Header */}
-        <header className="pt-8 px-6 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-2">
+        <header className="pt-6 md:pt-8 px-4 md:px-6 text-center flex-shrink-0">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-1 md:mb-2">
             欢迎来到 FitTracker<span className="text-purple-500">.</span>
           </h1>
-          <p className="text-gray-400">让我们先了解你的身体数据</p>
+          <p className="text-gray-400 text-sm md:text-base">让我们先了解你的身体数据</p>
         </header>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-8 px-6 py-8">
+        <div className="flex-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-center gap-4 md:gap-8 px-4 md:px-6 py-4 md:py-8 pb-6">
 
           {/* 3D Model */}
-          <div className="w-full lg:w-1/2 h-[400px] lg:h-[600px] rounded-3xl overflow-hidden bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-xl border border-white/10">
+          <div className="w-full lg:w-1/2 h-[280px] md:h-[400px] lg:h-[600px] rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-xl border border-white/10 flex-shrink-0">
             <Canvas shadows dpr={[1, 2]}>
               <PerspectiveCamera makeDefault position={[0, 1, 3]} />
 
@@ -153,11 +153,11 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
           </div>
 
           {/* Input Form */}
-          <div className="w-full lg:w-1/2 max-w-md">
-            <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+          <div className="w-full lg:w-1/2 max-w-md mx-auto flex-shrink-0">
+            <div className="bg-white/5 backdrop-blur-xl rounded-2xl md:rounded-3xl p-5 md:p-8 border border-white/10">
 
               {/* Progress */}
-              <div className="flex gap-2 mb-8">
+              <div className="flex gap-2 mb-6 md:mb-8">
                 {steps.map((_, idx) => (
                   <div
                     key={idx}
@@ -168,13 +168,13 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
               </div>
 
               {/* Step Content */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-2">{currentStep.title}</h2>
-                <p className="text-gray-400 text-sm">{currentStep.description}</p>
+              <div className="mb-6 md:mb-8">
+                <h2 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">{currentStep.title}</h2>
+                <p className="text-gray-400 text-xs md:text-sm">{currentStep.description}</p>
               </div>
 
               {/* Input */}
-              <div className="mb-8">
+              <div className="mb-6 md:mb-8">
                 <div className="relative">
                   <input
                     type="number"
@@ -183,9 +183,9 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                     min={currentStep.min}
                     max={currentStep.max}
                     step={currentStep.step}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-3xl font-bold text-center focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 py-3 md:py-4 text-2xl md:text-3xl font-bold text-center focus:outline-none focus:border-purple-500 transition-colors"
                   />
-                  <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
+                  <span className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 text-gray-400 text-lg md:text-xl">
                     {currentStep.unit}
                   </span>
                 </div>
@@ -198,23 +198,23 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                   min={currentStep.min}
                   max={currentStep.max}
                   step={currentStep.step}
-                  className="w-full mt-4 accent-purple-500"
+                  className="w-full mt-3 md:mt-4 accent-purple-500"
                 />
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 mb-8 p-4 bg-white/5 rounded-2xl">
+              <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8 p-3 md:p-4 bg-white/5 rounded-xl md:rounded-2xl">
                 <div className="text-center">
-                  <div className="text-xs text-gray-400 mb-1">BMI</div>
-                  <div className="text-lg font-bold">{bmi}</div>
+                  <div className="text-[10px] md:text-xs text-gray-400 mb-1">BMI</div>
+                  <div className="text-base md:text-lg font-bold">{bmi}</div>
                 </div>
                 <div className="text-center border-x border-white/10">
-                  <div className="text-xs text-gray-400 mb-1">体脂率</div>
-                  <div className="text-lg font-bold">{bodyFatPct}%</div>
+                  <div className="text-[10px] md:text-xs text-gray-400 mb-1">体脂率</div>
+                  <div className="text-base md:text-lg font-bold">{bodyFatPct}%</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xs text-gray-400 mb-1">肌肉率</div>
-                  <div className="text-lg font-bold">{musclePct}%</div>
+                  <div className="text-[10px] md:text-xs text-gray-400 mb-1">肌肉率</div>
+                  <div className="text-base md:text-lg font-bold">{musclePct}%</div>
                 </div>
               </div>
 
@@ -222,14 +222,14 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
               <div className="flex gap-3">
                 <button
                   onClick={handleSkip}
-                  className="flex-1 py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                  className="flex-1 py-2.5 md:py-3 px-4 md:px-6 rounded-xl text-sm md:text-base bg-white/5 hover:bg-white/10 transition-colors"
                 >
                   跳过
                 </button>
                 <button
                   onClick={handleNext}
                   disabled={!isStepValid()}
-                  className="flex-1 py-3 px-6 rounded-xl bg-purple-500 hover:bg-purple-600 disabled:bg-white/10 disabled:text-gray-500 transition-colors font-semibold"
+                  className="flex-1 py-2.5 md:py-3 px-4 md:px-6 rounded-xl text-sm md:text-base bg-purple-500 hover:bg-purple-600 disabled:bg-white/10 disabled:text-gray-500 transition-colors font-semibold"
                 >
                   {step < 3 ? '下一步' : '开始训练'}
                 </button>
