@@ -103,15 +103,15 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const musclePct = ((bodyData.muscle / bodyData.weight) * 100).toFixed(1)
 
   return (
-    <div className="h-screen bg-[#0a0a0a] text-white overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-[#0a0a0a] text-white overflow-hidden flex flex-col">
       {/* Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-purple-900/10 rounded-full blur-[120px] animate-pulse-slow" />
         <div className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] bg-blue-900/10 rounded-full blur-[120px]" />
       </div>
 
       {/* Header */}
-      <header className="pt-4 md:pt-6 px-4 md:px-6 text-center flex-shrink-0 z-10">
+      <header className="pt-4 px-4 text-center flex-shrink-0 z-10">
         <h1 className="text-xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-1">
           欢迎来到 FitTracker<span className="text-purple-500">.</span>
         </h1>
@@ -119,10 +119,10 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 md:gap-8 px-4 md:px-6 py-4 min-h-0 z-10">
+      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 px-4 py-4 min-h-0 z-10">
 
-        {/* 3D Model Container - Flexible height */}
-        <div className="w-full lg:w-1/2 h-[40vh] lg:h-full max-h-[600px] rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-xl border border-white/10 flex-shrink-0 relative">
+        {/* 3D Model Container - Flexible height to fill space */}
+        <div className="w-full lg:w-1/2 flex-1 lg:h-full min-h-[150px] rounded-2xl md:rounded-3xl overflow-hidden bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-xl border border-white/10 relative">
           <Canvas shadows dpr={[1, 2]}>
             <PerspectiveCamera makeDefault position={[0, 1, 3]} />
 
