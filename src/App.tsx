@@ -4,9 +4,12 @@ import { categories, DEFAULT_EXERCISES } from './constants'
 import type { WorkoutCategory, WorkoutRecord } from './types'
 import { CategoryGrid } from './components/CategoryGrid'
 import { WorkoutRecordsView } from './components/WorkoutRecordsView'
+import { WelcomeScreen, type BodyData } from './components/WelcomeScreen'
 import * as api from './api/adapter'
 
 function App() {
+  const [showWelcome, setShowWelcome] = useState(false)
+  const [bodyData, setBodyData] = useState<BodyData | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<WorkoutCategory | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
@@ -27,9 +30,15 @@ function App() {
   const [showExerciseManager, setShowExerciseManager] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
 
-  // 从 API 加载记录
+  // 检查是否需要显示欢迎页面
   useEffect(() => {
-    loadRecords()
+    const savedBodyData = localStorage.getItem('fit_body_data')
+    if (savedBodyData) {
+      setBodyData(JSON.parse(savedBodyData))
+      setShowWelcome(false)
+    } else {
+      setShowWelcome(true)
+    }
   }, [])
 
   // 保存 exercises 到本地存储
@@ -55,6 +64,13 @@ function App() {
       console.error('Failed to load records:', error)
     }
   }
+
+  // 从 API 加载记录
+  useEffect(() => {
+    if (!showWelcome) {
+      loadRecords()
+    }
+  }, [showWelcome])
 
   // Helpers
   const changeDate = (days: number) => {
@@ -138,6 +154,16 @@ function App() {
     }
   }
 
+  const handleWelcomeComplete = (data: BodyData) => {
+    setBodyData(data)
+    setShowWelcome(false)
+  }
+
+  // 显示欢迎页面
+  if (showWelcome) {
+    return <WelcomeScreen onComplete={handleWelcomeComplete} />
+  }
+
   const activeCategoryConfig = categories.find(c => c.id === selectedCategory)
   const currentRecords = records.filter(r =>
     r.category === selectedCategory && r.date === selectedDate
@@ -161,6 +187,23 @@ function App() {
               FitTracker<span className="text-purple-500">.</span>
             </h1>
             <p className="text-gray-500 text-lg tracking-wide">Minimalist Workout Log</p>
+
+            {/* 显示身体数据摘要 */}
+            {bodyData && (
+              <div className="mt-6 flex gap-4 text-sm">
+                <span className="text-gray-400">身高: <span className="text-white">{bodyData.height}cm</span></span>
+                <span className="text-gray-400">体重: <span className="text-white">{bodyData.weight}kg</span></span>
+                <span className="text-gray-400">BMI: <span className="text-white">
+                  {(bodyData.weight / Math.pow(bodyData.height / 100, 2)).toFixed(1)}
+                </span></span>
+                <button
+                  onClick={() => setShowWelcome(true)}
+                  className="text-purple-400 hover:text-purple-300 underline"
+                >
+                  编辑
+                </button>
+              </div>
+            )}
           </header>
         )}
 
