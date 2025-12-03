@@ -4,22 +4,16 @@ import { categories, DEFAULT_EXERCISES } from './constants'
 import type { WorkoutCategory, WorkoutRecord } from './types'
 import { CategoryGrid } from './components/CategoryGrid'
 import { WorkoutRecordsView } from './components/WorkoutRecordsView'
+import * as api from './api/adapter'
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState<WorkoutCategory | null>(null)
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
-  // Records State
-  const [records, setRecords] = useState<WorkoutRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('fit_records')
-      return saved ? JSON.parse(saved) : []
-    } catch (e) {
-      return []
-    }
-  })
+  // Records State - 从 API 获取
+  const [records, setRecords] = useState<WorkoutRecord[]>([])
 
-  // Exercises State
+  // Exercises State - 保持本地存储
   const [exercises, setExercises] = useState<Record<WorkoutCategory, string[]>>(() => {
     try {
       const saved = localStorage.getItem('fit_exercises')
@@ -33,10 +27,12 @@ function App() {
   const [showExerciseManager, setShowExerciseManager] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
 
+  // 从 API 加载记录
   useEffect(() => {
-    localStorage.setItem('fit_records', JSON.stringify(records))
-  }, [records])
+    loadRecords()
+  }, [])
 
+  // 保存 exercises 到本地存储
   useEffect(() => {
     localStorage.setItem('fit_exercises', JSON.stringify(exercises))
   }, [exercises])
@@ -49,6 +45,16 @@ function App() {
       setShowExerciseManager(false)
     }
   }, [selectedCategory])
+
+  // 加载记录
+  const loadRecords = async () => {
+    try {
+      const result = await api.getRecords()
+      setRecords(result.list)
+    } catch (error) {
+      console.error('Failed to load records:', error)
+    }
+  }
 
   // Helpers
   const changeDate = (days: number) => {
@@ -92,7 +98,7 @@ function App() {
     return `上次训练：${diffDays}天前 (${formatDate(lastDate)})`
   }
 
-  // Exercise Management Logic
+  // Exercise Management Logic - 保持本地存储
   const handleAddExercise = (name: string) => {
     if (!selectedCategory) return
     const current = exercises[selectedCategory] || []
@@ -112,17 +118,24 @@ function App() {
     })
   }
 
-  // Record Logic
-  const handleAddRecord = (data: { exercise: string; sets: number; reps: number; weight: number }) => {
+  // Record Logic - 使用 API
+  const handleAddRecord = async (data: { exercise: string; sets: number; reps: number; weight: number }) => {
     if (!selectedCategory) return
-    const newRecord: WorkoutRecord = {
-      id: Date.now().toString(),
-      category: selectedCategory,
-      ...data,
-      date: selectedDate,
+
+    try {
+      const newRecord = await api.createRecord({
+        category: selectedCategory,
+        ...data,
+        date: selectedDate,
+      })
+
+      // 更新本地状态
+      setRecords([newRecord, ...records])
+      setShowAddForm(false)
+    } catch (error) {
+      console.error('Failed to create record:', error)
+      alert('创建记录失败，请重试')
     }
-    setRecords([newRecord, ...records])
-    setShowAddForm(false)
   }
 
   const activeCategoryConfig = categories.find(c => c.id === selectedCategory)
