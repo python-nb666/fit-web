@@ -142,6 +142,7 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
               <BodyModel {...bodyData} />
 
               <OrbitControls
+                target={[0, 1, 0]}
                 enableZoom={false}
                 enablePan={false}
                 minPolarAngle={Math.PI / 4}
