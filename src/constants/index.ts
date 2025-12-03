@@ -1,3 +1,4 @@
+import React from 'react';
 import { Icons } from '../components/Icons';
 import type { WorkoutCategory } from '../types';
 
