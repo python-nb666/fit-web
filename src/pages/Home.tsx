@@ -9,6 +9,7 @@ import '../App.css'
 // -----------------------------------------------------------------------------
 
 type WorkoutCategory = 'chest' | 'back' | 'shoulders' | 'legs' | 'arms' | 'core'
+type WeightUnit = 'kg' | 'lbs'
 
 interface WorkoutRecord {
   id: string
@@ -17,6 +18,7 @@ interface WorkoutRecord {
   sets: number
   reps: number
   weight: number
+  weightUnit: WeightUnit
   date: string
 }
 
@@ -90,9 +92,9 @@ export function Home() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [formData, setFormData] = useState({
     exercise: '',
-    sets: 0,
     reps: 0,
     weight: 0,
+    weightUnit: 'kg' as WeightUnit
   })
 
   // Helpers
@@ -165,11 +167,17 @@ export function Home() {
       id: Date.now().toString(),
       category: selectedCategory,
       ...formData,
+      sets: 1, // Always 1 set per record now
       date: selectedDate,
     }
     setRecords([newRecord, ...records])
-    setFormData({ exercise: '', sets: 0, reps: 0, weight: 0 })
-    setShowAddForm(false)
+    // Keep exercise selected, just reset reps/weight slightly or keep them for convenience? 
+    // Usually people do similar weight/reps, so keeping might be better, but let's reset reps to 0 to encourage accuracy
+    // setFormData({ ...formData, reps: 0 }) 
+  }
+
+  const handleDeleteRecord = (id: string) => {
+    setRecords(records.filter(r => r.id !== id))
   }
 
   const activeCategoryConfig = categories.find(c => c.id === selectedCategory)
@@ -177,6 +185,20 @@ export function Home() {
     r.category === selectedCategory && r.date === selectedDate
   )
   const currentCategoryExercises = selectedCategory ? (exercises[selectedCategory] || []) : []
+
+  // Group records by exercise
+  const groupedRecords = currentRecords.reduce((acc, record) => {
+    if (!acc[record.exercise]) {
+      acc[record.exercise] = []
+    }
+    acc[record.exercise].push(record)
+    return acc
+  }, {} as Record<string, WorkoutRecord[]>)
+
+  // Sort sets by time (id) - assuming id is timestamp
+  Object.keys(groupedRecords).forEach(key => {
+    groupedRecords[key].sort((a, b) => parseInt(a.id) - parseInt(b.id))
+  })
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-white/20">
@@ -385,33 +407,69 @@ export function Home() {
                         </p>
                       )}
                     </div>
-                    <div>
-                      <CustomSelect
-                        label="Sets"
-                        placeholder="0"
-                        value={formData.sets || ''}
-                        onChange={(val) => setFormData({ ...formData, sets: val as number })}
-                        options={Array.from({ length: 12 }, (_, i) => i + 1).map(num => ({ value: num, label: num.toString() }))}
-                      />
-                    </div>
+
+                    {/* Show recent sets for this exercise if selected */}
+                    {formData.exercise && groupedRecords[formData.exercise] && (
+                      <div className="md:col-span-2 mb-2">
+                        <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">今日已记录组数</label>
+                        <div className="flex flex-wrap gap-2">
+                          {groupedRecords[formData.exercise].map((record, idx) => (
+                            <div key={record.id} className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-300 flex items-center gap-2">
+                              <span className="text-purple-400 font-mono">#{idx + 1}</span>
+                              <span>{record.reps} x {record.weight}{record.weightUnit || 'kg'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div>
                       <CustomSelect
                         label="Reps"
                         placeholder="0"
                         value={formData.reps || ''}
                         onChange={(val) => setFormData({ ...formData, reps: val as number })}
-                        options={Array.from({ length: 20 }, (_, i) => i + 1).map(num => ({ value: num, label: num.toString() }))}
+                        options={Array.from({ length: 30 }, (_, i) => i + 1).map(num => ({ value: num, label: num.toString() }))}
                       />
+                      <div className="flex gap-2 mt-2">
+                        {[6, 8, 10, 12].map(num => (
+                          <button
+                            key={num}
+                            onClick={() => setFormData({ ...formData, reps: num })}
+                            className="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-gray-400 hover:text-white transition-colors"
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Weight (kg)</label>
-                      <input
-                        type="number"
-                        value={formData.weight || ''}
-                        onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-purple-500 outline-none transition-all text-base placeholder-white/20"
-                        placeholder="0"
-                      />
+                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Weight</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={formData.weight || ''}
+                          onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
+                          className="flex-1 px-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-purple-500 outline-none transition-all text-base placeholder-white/20"
+                          placeholder="0"
+                        />
+                        <div className="flex bg-black/20 rounded-xl border border-white/10 p-1">
+                          <button
+                            onClick={() => setFormData({ ...formData, weightUnit: 'kg' })}
+                            className={`px-3 rounded-lg text-sm font-medium transition-all ${formData.weightUnit === 'kg' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-white'
+                              }`}
+                          >
+                            kg
+                          </button>
+                          <button
+                            onClick={() => setFormData({ ...formData, weightUnit: 'lbs' })}
+                            className={`px-3 rounded-lg text-sm font-medium transition-all ${formData.weightUnit === 'lbs' ? 'bg-purple-600 text-white' : 'text-gray-500 hover:text-white'
+                              }`}
+                          >
+                            lbs
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -419,46 +477,78 @@ export function Home() {
                       onClick={() => setShowAddForm(false)}
                       className="flex-1 py-3 rounded-xl text-gray-400 hover:bg-white/5 transition-colors"
                     >
-                      取消
+                      完成
                     </button>
                     <button
                       onClick={handleAddRecord}
-                      disabled={!formData.exercise}
+                      disabled={!formData.exercise || !formData.reps}
                       className="flex-[2] py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      保存
+                      添加一组
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Records List */}
-              <div className="space-y-3">
-                {currentRecords.length === 0 ? (
-                  <div className="py-20 text-center">
-                    <p className="text-gray-600">今日无记录</p>
-                  </div>
+              {/* Records List (Grouped) */}
+              <div className="space-y-6">
+                {Object.keys(groupedRecords).length === 0 ? (
+                  !showAddForm && (
+                    <div className="py-20 text-center">
+                      <p className="text-gray-600">今日无记录</p>
+                    </div>
+                  )
                 ) : (
-                  currentRecords.map((record) => (
+                  Object.entries(groupedRecords).map(([exercise, exerciseRecords]) => (
                     <div
-                      key={record.id}
-                      className="group p-5 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      key={exercise}
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, exercise }))
+                        setShowAddForm(true)
+                      }}
+                      className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 cursor-pointer hover:bg-white/[0.04] hover:border-white/10 transition-all"
                     >
-                      <div>
-                        <h4 className="text-lg font-medium text-gray-200 mb-2">{record.exercise}</h4>
-                        <div className="flex items-center gap-4 text-sm text-gray-500 font-mono">
-                          <span className="bg-white/5 px-2 py-0.5 rounded text-gray-400">{record.sets} sets</span>
-                          <span>×</span>
-                          <span className="bg-white/5 px-2 py-0.5 rounded text-gray-400">{record.reps} reps</span>
-                          <span>@</span>
-                          <span className="text-purple-400">{record.weight}kg</span>
-                        </div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xl font-bold text-white">{exercise}</h4>
+                        <span className="text-sm text-gray-500">{exerciseRecords.length} sets</span>
                       </div>
-                      <div className="flex items-center justify-between md:block md:text-right border-t border-white/5 pt-3 md:border-0 md:pt-0">
-                        <div className="text-xs text-gray-600 uppercase tracking-wider md:mb-1">Volume</div>
-                        <div className="text-xl font-light text-white">
-                          {(record.sets * record.reps * record.weight).toLocaleString()} <span className="text-sm text-gray-600">kg</span>
-                        </div>
+
+                      <div className="space-y-2">
+                        {exerciseRecords.map((record, idx) => (
+                          <div
+                            key={record.id}
+                            className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="flex items-center gap-4">
+                              <span className="text-gray-500 font-mono text-sm w-8">#{idx + 1}</span>
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-xl font-bold text-white">{record.reps}</span>
+                                <span className="text-xs text-gray-500 uppercase">reps</span>
+                              </div>
+                              <span className="text-gray-600">×</span>
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-lg font-medium text-purple-400">{record.weight}</span>
+                                <span className="text-xs text-purple-400/70">{record.weightUnit || 'kg'}</span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                              <div className="text-right hidden md:block">
+                                <div className="text-xs text-gray-600 uppercase tracking-wider">Volume</div>
+                                <div className="text-sm font-light text-gray-400">
+                                  {(record.reps * record.weight).toLocaleString()} {record.weightUnit || 'kg'}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteRecord(record.id)}
+                                className="p-2 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                              >
+                                <Icons.X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   ))
