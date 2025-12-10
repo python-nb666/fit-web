@@ -194,20 +194,85 @@ export function Home() {
 
         {/* HEADER */}
         {!selectedCategory && (
-          <header className="mb-12 md:mb-16 animate-fade-in flex justify-between items-start">
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
-                FitTracker<span className="text-purple-500">.</span>
-              </h1>
-              <p className="text-gray-500 text-lg tracking-wide">Minimalist Workout Log</p>
+          <header className="mb-12 md:mb-16 animate-fade-in">
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
+                  FitTracker<span className="text-purple-500">.</span>
+                </h1>
+                <p className="text-gray-500 text-lg tracking-wide">Minimalist Workout Log</p>
+              </div>
+              <Link
+                to="/body-fat"
+                className="p-3 rounded-full bg-white/[0.05] hover:bg-white/10 transition-colors text-purple-400 hover:text-purple-300 group"
+                title="体脂记录"
+              >
+                <Icons.TrendingUp className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              </Link>
             </div>
-            <Link
-              to="/body-fat"
-              className="p-3 rounded-full bg-white/[0.05] hover:bg-white/10 transition-colors text-purple-400 hover:text-purple-300 group"
-              title="体脂记录"
-            >
-              <Icons.TrendingUp className="w-6 h-6 group-hover:scale-110 transition-transform" />
-            </Link>
+
+            {/* Last Workout Summary */}
+            {(() => {
+              if (records.length === 0) return null
+
+              const sortedRecords = [...records].sort((a, b) => {
+                if (a.date !== b.date) return b.date.localeCompare(a.date)
+                return parseInt(b.id) - parseInt(a.id)
+              })
+              const lastRecord = sortedRecords[0]
+              const categoryConfig = categories.find(c => c.id === lastRecord.category)
+
+              const today = new Date()
+              const lastDate = new Date(lastRecord.date)
+              const todayStr = today.toISOString().split('T')[0]
+
+              // Calculate difference in days
+              const diffTime = new Date(todayStr).getTime() - new Date(lastRecord.date).getTime()
+              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+              let message = ''
+              let emoji = ''
+              let textColor = 'text-gray-400'
+
+              if (diffDays === 0) {
+                message = '今天已完成训练，继续保持！'
+                emoji = '🔥'
+                textColor = 'text-green-400'
+              } else if (diffDays === 1) {
+                message = '今天还没有锻炼，加油！'
+                emoji = '💪'
+                textColor = 'text-blue-400'
+              } else {
+                message = `您已经 ${diffDays} 天没有锻炼过了`
+                if (diffDays <= 3) emoji = '📅'
+                else if (diffDays <= 7) emoji = '🕸️'
+                else emoji = '🗿'
+                textColor = 'text-orange-400'
+              }
+
+              return (
+                <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-5 backdrop-blur-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Last Workout</span>
+                    <span className="text-xs text-gray-600 font-mono">{lastRecord.date}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${categoryConfig?.color.replace('text-', 'bg-')}/10 ${categoryConfig?.color}`}>
+                      {categoryConfig && <categoryConfig.icon className="w-5 h-5" />}
+                    </div>
+                    <div>
+                      <div className="text-lg font-bold text-white">
+                        {categoryConfig?.label || lastRecord.category}
+                      </div>
+                      <div className={`text-sm ${textColor} flex items-center gap-1.5`}>
+                        <span>{emoji}</span>
+                        <span>{message}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </header>
         )}
 
