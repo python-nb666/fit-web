@@ -86,6 +86,7 @@ export function Home() {
   const [quickAddExercise, setQuickAddExercise] = useState<string | null>(null)
   const [activeRecordForMenu, setActiveRecordForMenu] = useState<WorkoutRecord | null>(null)
   const [editingRecord, setEditingRecord] = useState<WorkoutRecord | null>(null)
+  const [showClearCacheConfirm, setShowClearCacheConfirm] = useState(false)
 
   // Helpers
 
@@ -202,67 +203,97 @@ export function Home() {
                 </h1>
                 <p className="text-gray-500 text-lg tracking-wide">Minimalist Workout Log</p>
               </div>
-              <Link
-                to="/body-fat"
-                className="p-3 rounded-full bg-white/[0.05] hover:bg-white/10 transition-colors text-purple-400 hover:text-purple-300 group"
-                title="体脂记录"
-              >
-                <Icons.TrendingUp className="w-6 h-6 group-hover:scale-110 transition-transform" />
-              </Link>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowClearCacheConfirm(true)}
+                  className="p-3 rounded-full bg-white/[0.05] hover:bg-white/10 transition-colors text-red-400 hover:text-red-300 group"
+                  title="清除缓存"
+                >
+                  <Icons.Trash className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                </button>
+                <Link
+                  to="/body-fat"
+                  className="p-3 rounded-full bg-white/[0.05] hover:bg-white/10 transition-colors text-purple-400 hover:text-purple-300 group"
+                  title="体脂记录"
+                >
+                  <Icons.TrendingUp className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                </Link>
+              </div>
             </div>
 
             {/* Last Workout Summary */}
             {(() => {
-              if (records.length === 0) return null
-
-              const sortedRecords = [...records].sort((a, b) => {
-                if (a.date !== b.date) return b.date.localeCompare(a.date)
-                return parseInt(b.id) - parseInt(a.id)
-              })
-              const lastRecord = sortedRecords[0]
-              const categoryConfig = categories.find(c => c.id === lastRecord.category)
-
-              const today = new Date()
-              // const lastDate = new Date(lastRecord.date)
-              const todayStr = today.toISOString().split('T')[0]
-
-              // Calculate difference in days
-              const diffTime = new Date(todayStr).getTime() - new Date(lastRecord.date).getTime()
-              const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
+              let lastRecord: WorkoutRecord | null = null
+              let categoryConfig = null
               let message = ''
               let emoji = ''
               let textColor = 'text-gray-400'
+              let dateDisplay = ''
+              let label = ''
+              let IconComponent: React.ElementType = Icons.TrendingUp
+              let iconColorClass = 'text-purple-400'
+              let iconBgClass = 'bg-purple-500/10'
 
-              if (diffDays === 0) {
-                message = '今天已完成训练，继续保持！'
-                emoji = '😀'
-                textColor = 'text-green-400'
-              } else if (diffDays === 1) {
-                message = '今天还没有锻炼，加油！'
-                emoji = '😅'
-                textColor = 'text-blue-400'
+              if (records.length > 0) {
+                const sortedRecords = [...records].sort((a, b) => {
+                  if (a.date !== b.date) return b.date.localeCompare(a.date)
+                  return parseInt(b.id) - parseInt(a.id)
+                })
+                lastRecord = sortedRecords[0] as WorkoutRecord
+                categoryConfig = categories.find(c => c.id === lastRecord!.category)
+
+                const today = new Date()
+                const todayStr = today.toISOString().split('T')[0]
+                const diffTime = new Date(todayStr).getTime() - new Date(lastRecord!.date).getTime()
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+                dateDisplay = lastRecord!.date
+                label = categoryConfig?.label || lastRecord!.category
+                if (categoryConfig) {
+                  IconComponent = categoryConfig.icon
+                  iconColorClass = categoryConfig.color
+                  iconBgClass = `${categoryConfig.color.replace('text-', 'bg-')}/10`
+                }
+
+                if (diffDays === 0) {
+                  message = '今天已完成训练，继续保持！'
+                  emoji = '😀'
+                  textColor = 'text-green-400'
+                } else if (diffDays === 1) {
+                  message = '今天还没有锻炼，加油！'
+                  emoji = '😅'
+                  textColor = 'text-blue-400'
+                } else {
+                  message = `您已经 ${diffDays} 天没有锻炼过了`
+                  if (diffDays <= 3) emoji = '🤨'
+                  else if (diffDays <= 7) emoji = '😒'
+                  else emoji = '🤬'
+                  textColor = 'text-orange-400'
+                }
               } else {
-                message = `您已经 ${diffDays} 天没有锻炼过了`
-                if (diffDays <= 3) emoji = '🤨'
-                else if (diffDays <= 7) emoji = '😒'
-                else emoji = '🤬'
-                textColor = 'text-orange-400'
+                // No records case
+                message = '今天还没有锻炼，加油！'
+                emoji = '👋'
+                textColor = 'text-blue-400'
+                dateDisplay = new Date().toISOString().split('T')[0]
+                label = '开始记录'
               }
 
               return (
                 <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-5 backdrop-blur-sm">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Last Workout</span>
-                    <span className="text-xs text-gray-600 font-mono">{lastRecord.date}</span>
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {records.length > 0 ? 'Last Workout' : 'Status'}
+                    </span>
+                    <span className="text-xs text-gray-600 font-mono">{dateDisplay}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-xl ${categoryConfig?.color.replace('text-', 'bg-')}/10 ${categoryConfig?.color}`}>
-                      {categoryConfig && <categoryConfig.icon className="w-5 h-5" />}
+                    <div className={`p-2 rounded-xl ${iconBgClass} ${iconColorClass}`}>
+                      <IconComponent className="w-5 h-5" />
                     </div>
                     <div>
                       <div className="text-lg font-bold text-white">
-                        {categoryConfig?.label || lastRecord.category}
+                        {label}
                       </div>
                       <div className={`text-sm ${textColor} flex items-center gap-1.5`}>
                         <span>{emoji}</span>
@@ -406,6 +437,39 @@ export function Home() {
             </div>
           )}
         </main>
+        {/* Clear Cache Confirmation Modal */}
+        {showClearCacheConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-[#1c1c1e] rounded-2xl w-full max-w-sm overflow-hidden border border-white/10 shadow-xl">
+              <div className="p-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+                  <Icons.Trash className="w-6 h-6 text-red-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">确认清除所有数据？</h3>
+                <p className="text-gray-400 text-sm mb-6">
+                  此操作将删除所有本地存储的训练记录和自定义动作。此操作无法撤销。
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowClearCacheConfirm(false)}
+                    className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium transition-colors"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={() => {
+                      localStorage.clear()
+                      window.location.reload()
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-medium transition-colors"
+                  >
+                    确认删除
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
