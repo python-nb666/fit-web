@@ -28,8 +28,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
       {Object.entries(groupedRecords).map(([exercise, exerciseRecords]) => (
         <div
           key={exercise}
-          onClick={() => onEditExercise(exercise)}
-          className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 cursor-pointer hover:bg-white/[0.04] hover:border-white/10 transition-all"
+          className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 transition-all"
         >
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-xl font-bold text-white">{exercise}</h4>
@@ -41,10 +40,14 @@ export const RecordsList: React.FC<RecordsListProps> = ({
               <div
                 key={record.id}
                 className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
-                onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-4">
-                  <span className="text-gray-500 font-mono text-sm w-8">#{idx + 1}</span>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-gray-500 font-mono text-sm w-8">#{idx + 1}</span>
+                    {record.time && (
+                      <span className="text-[10px] text-gray-600 font-mono">{record.time}</span>
+                    )}
+                  </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-xl font-bold text-white">{record.reps}</span>
                     <span className="text-xs text-gray-500 uppercase">reps</span>
@@ -73,6 +76,15 @@ export const RecordsList: React.FC<RecordsListProps> = ({
               </div>
             ))}
           </div>
+
+          {/* Quick Add Button */}
+          <button
+            onClick={() => onEditExercise(exercise)}
+            className="w-full mt-4 py-3 rounded-xl border border-dashed border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 text-gray-500 hover:text-purple-300 transition-all flex items-center justify-center gap-2 group"
+          >
+            <Icons.Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium">Add Set</span>
+          </button>
         </div>
       ))}
     </div>

@@ -17,4 +17,5 @@ export interface WorkoutRecord {
   weight: number;
   weightUnit: WeightUnit;
   date: string;
+  time?: string;
 }

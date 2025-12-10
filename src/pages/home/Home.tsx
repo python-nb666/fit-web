@@ -148,6 +148,7 @@ export function Home() {
       ...data,
       sets: 1, // Always 1 set per record now
       date: selectedDate,
+      time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     }
     setRecords([newRecord, ...records])
   }

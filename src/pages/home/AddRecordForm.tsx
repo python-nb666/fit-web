@@ -16,7 +16,6 @@ export const AddRecordForm: React.FC<AddRecordFormProps> = ({
   initialExercise = '',
   groupedRecords,
   onSave,
-  onCancel,
   onOpenExerciseManager
 }) => {
   const [formData, setFormData] = useState({
@@ -121,15 +120,9 @@ export const AddRecordForm: React.FC<AddRecordFormProps> = ({
       </div>
       <div className="flex gap-3">
         <button
-          onClick={onCancel}
-          className="flex-1 py-3 rounded-xl text-gray-400 hover:bg-white/5 transition-colors"
-        >
-          完成
-        </button>
-        <button
           onClick={handleSave}
           disabled={!formData.exercise || !formData.reps}
-          className="flex-[2] py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-900/20"
         >
           添加一组
         </button>
