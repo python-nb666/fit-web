@@ -236,17 +236,17 @@ export function Home() {
 
               if (diffDays === 0) {
                 message = '今天已完成训练，继续保持！'
-                emoji = '🔥'
+                emoji = '😀'
                 textColor = 'text-green-400'
               } else if (diffDays === 1) {
                 message = '今天还没有锻炼，加油！'
-                emoji = '💪'
+                emoji = '😅'
                 textColor = 'text-blue-400'
               } else {
                 message = `您已经 ${diffDays} 天没有锻炼过了`
-                if (diffDays <= 3) emoji = '📅'
-                else if (diffDays <= 7) emoji = '🕸️'
-                else emoji = '🗿'
+                if (diffDays <= 3) emoji = '🤨'
+                else if (diffDays <= 7) emoji = '😒'
+                else emoji = '🤬'
                 textColor = 'text-orange-400'
               }
 
