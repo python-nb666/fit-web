@@ -5,7 +5,7 @@ import './App.css'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename='/fit-web'>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/body-fat" element={<BodyFat />} />
