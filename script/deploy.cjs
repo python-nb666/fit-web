@@ -30,12 +30,14 @@ function copyDir(src, dest) {
 }
 
 function cleanBuildBranch() {
+  // 需要保留的文件 / 文件夹
+  const keepList = [".git", ".gitignore", "node_modules"];
+
   fs.readdirSync(".", { withFileTypes: true }).forEach((item) => {
-    // 跳过 .git 文件夹
-    if (item.name === ".git") return;
+    // 如果在保留名单里，跳过
+    if (keepList.includes(item.name)) return;
 
     const itemPath = path.join(".", item.name);
-    // 删除文件或文件夹
     fs.rmSync(itemPath, { recursive: true, force: true });
   });
 }
