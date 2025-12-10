@@ -29,11 +29,15 @@ function copyDir(src, dest) {
   });
 }
 
-// 删除目录
-function removeDir(dir) {
-  if (fs.existsSync(dir)) {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
+function cleanBuildBranch() {
+  fs.readdirSync(".", { withFileTypes: true }).forEach((item) => {
+    // 跳过 .git 文件夹
+    if (item.name === ".git") return;
+
+    const itemPath = path.join(".", item.name);
+    // 删除文件或文件夹
+    fs.rmSync(itemPath, { recursive: true, force: true });
+  });
 }
 
 async function deploy() {
@@ -57,7 +61,7 @@ async function deploy() {
   }
 
   console.log("🧹 清理 build 分支...");
-  removeDir("."); // 除.git外清空
+  cleanBuildBranch();
   fs.readdirSync(".").forEach((file) => {
     if (file !== ".git") removeDir(file);
   });
