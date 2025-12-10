@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Icons } from '../components/Icons'
-import { CustomSelect } from '../components/CustomSelect'
+import { Icons } from '../../components/Icons'
+import { CustomSelect } from '../../components/CustomSelect'
 import '../App.css'
 
 // -----------------------------------------------------------------------------
@@ -325,8 +325,8 @@ export function Home() {
                   <button
                     onClick={() => setShowExerciseManager(!showExerciseManager)}
                     className={`p-4 rounded-2xl border transition-all duration-300 ${showExerciseManager
-                        ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
-                        : 'bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.06] text-gray-400 hover:text-white'
+                      ? 'bg-purple-500/20 border-purple-500/50 text-purple-300'
+                      : 'bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.06] text-gray-400 hover:text-white'
                       }`}
                     title="管理动作"
                   >

@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Home } from './pages/Home'
-import { BodyFat } from './pages/BodyFat'
+import { lazy } from 'react';
+import { Home } from './pages/home/Home'
 import './App.css'
+const BodyFat = lazy(() => import('./pages/BodyFat'));
 
 function App() {
   return (

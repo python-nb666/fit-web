@@ -9,7 +9,7 @@ interface BodyFatRecord {
   percentage: number
 }
 
-export function BodyFat() {
+export default function BodyFat() {
   const [records, setRecords] = useState<BodyFatRecord[]>(() => {
     try {
       const saved = localStorage.getItem('fit_bodyfat')
