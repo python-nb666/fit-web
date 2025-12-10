@@ -223,7 +223,7 @@ export function Home() {
               const categoryConfig = categories.find(c => c.id === lastRecord.category)
 
               const today = new Date()
-              const lastDate = new Date(lastRecord.date)
+              // const lastDate = new Date(lastRecord.date)
               const todayStr = today.toISOString().split('T')[0]
 
               // Calculate difference in days
