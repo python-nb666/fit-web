@@ -50,7 +50,7 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setReps(Math.max(0, reps - 1))}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
               >
                 <Icons.Minus className="w-4 h-4" />
               </button>
@@ -58,12 +58,12 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
                 type="number"
                 value={reps || ''}
                 onChange={(e) => setReps(parseInt(e.target.value) || 0)}
-                className="flex-1 bg-transparent text-center text-2xl font-bold text-white outline-none"
+                className="flex-1 min-w-0 bg-transparent text-center text-2xl font-bold text-white outline-none"
                 placeholder="0"
               />
               <button
                 onClick={() => setReps(reps + 1)}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
               >
                 <Icons.Plus className="w-4 h-4" />
               </button>
@@ -88,7 +88,7 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setWeight(Math.max(0, weight - 2.5))}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
               >
                 <Icons.Minus className="w-4 h-4" />
               </button>
@@ -96,12 +96,12 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
                 type="number"
                 value={weight || ''}
                 onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-                className="flex-1 bg-transparent text-center text-2xl font-bold text-white outline-none"
+                className="flex-1 min-w-0 bg-transparent text-center text-2xl font-bold text-white outline-none"
                 placeholder="0"
               />
               <button
                 onClick={() => setWeight(weight + 2.5)}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0"
               >
                 <Icons.Plus className="w-4 h-4" />
               </button>
