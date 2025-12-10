@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig((mode: any) => {
   return {
-    base: mode === "production" ? "/fit-web/" : "/",
+    base: mode === "production" ? "/fit-web/" : "/fit-web/",
     server: {
       port: 8080,
     },

@@ -5,16 +5,44 @@ import type { WorkoutRecord } from '../../types/workout'
 interface RecordsListProps {
   groupedRecords: Record<string, WorkoutRecord[]>
   onEditExercise: (exerciseName: string) => void
-  onDeleteRecord: (id: string) => void
+  onLongPressRecord: (record: WorkoutRecord) => void
   showAddForm: boolean
 }
 
 export const RecordsList: React.FC<RecordsListProps> = ({
   groupedRecords,
-  onEditExercise,
-  onDeleteRecord,
+  onEditExercise, // This is now "Add Set"
+  onLongPressRecord,
   showAddForm
 }) => {
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleTouchStart = (record: WorkoutRecord) => {
+    timerRef.current = setTimeout(() => {
+      onLongPressRecord(record)
+    }, 500)
+  }
+
+  const handleTouchEnd = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }
+
+  // Mouse events for desktop testing
+  const handleMouseDown = (record: WorkoutRecord) => {
+    timerRef.current = setTimeout(() => {
+      onLongPressRecord(record)
+    }, 500)
+  }
+
+  const handleMouseUp = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }
   if (Object.keys(groupedRecords).length === 0) {
     return !showAddForm ? (
       <div className="py-20 text-center">
@@ -39,9 +67,14 @@ export const RecordsList: React.FC<RecordsListProps> = ({
             {exerciseRecords.map((record, idx) => (
               <div
                 key={record.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group select-none active:scale-[0.98] duration-200"
+                onTouchStart={() => handleTouchStart(record)}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={() => handleMouseDown(record)}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 pointer-events-none">
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-gray-500 font-mono text-sm w-8">#{idx + 1}</span>
                     {record.time && (
@@ -59,19 +92,13 @@ export const RecordsList: React.FC<RecordsListProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 pointer-events-none">
                   <div className="text-right hidden md:block">
                     <div className="text-xs text-gray-600 uppercase tracking-wider">Volume</div>
                     <div className="text-sm font-light text-gray-400">
                       {(record.reps * record.weight).toLocaleString()} {record.weightUnit || 'kg'}
                     </div>
                   </div>
-                  <button
-                    onClick={() => onDeleteRecord(record.id)}
-                    className="p-2 text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    <Icons.X className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
             ))}

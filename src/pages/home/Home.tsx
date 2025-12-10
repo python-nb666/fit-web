@@ -7,6 +7,8 @@ import { ExerciseManager } from './ExerciseManager'
 import { AddRecordForm } from './AddRecordForm'
 import { RecordsList } from './RecordsList'
 import { CategoryDetailHeader } from './CategoryDetailHeader'
+import { QuickRecordPopup } from './QuickRecordPopup'
+import { RecordActionMenu } from './RecordActionMenu'
 import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '../../types/workout'
 
 // -----------------------------------------------------------------------------
@@ -81,6 +83,9 @@ export function Home() {
 
   const [showAddForm, setShowAddForm] = useState(false)
   const [initialExerciseForForm, setInitialExerciseForForm] = useState('')
+  const [quickAddExercise, setQuickAddExercise] = useState<string | null>(null)
+  const [activeRecordForMenu, setActiveRecordForMenu] = useState<WorkoutRecord | null>(null)
+  const [editingRecord, setEditingRecord] = useState<WorkoutRecord | null>(null)
 
   // Helpers
 
@@ -277,12 +282,62 @@ export function Home() {
               <RecordsList
                 groupedRecords={groupedRecords}
                 onEditExercise={(exercise) => {
-                  setInitialExerciseForForm(exercise)
-                  setShowAddForm(true)
+                  setQuickAddExercise(exercise)
                 }}
-                onDeleteRecord={handleDeleteRecord}
+                onLongPressRecord={(record) => {
+                  setActiveRecordForMenu(record)
+                }}
                 showAddForm={showAddForm}
               />
+
+              {/* Quick Record Popup (Add Set) */}
+              {quickAddExercise && (
+                <QuickRecordPopup
+                  exercise={quickAddExercise}
+                  onSave={(data) => {
+                    handleAddRecord({ exercise: quickAddExercise, ...data })
+                    setQuickAddExercise(null)
+                  }}
+                  onClose={() => setQuickAddExercise(null)}
+                />
+              )}
+
+              {/* Quick Record Popup (Edit) */}
+              {editingRecord && (
+                <QuickRecordPopup
+                  exercise={editingRecord.exercise}
+                  initialValues={{
+                    reps: editingRecord.reps,
+                    weight: editingRecord.weight,
+                    weightUnit: editingRecord.weightUnit
+                  }}
+                  onSave={(data) => {
+                    // Update existing record
+                    setRecords(records.map(r =>
+                      r.id === editingRecord.id
+                        ? { ...r, ...data }
+                        : r
+                    ))
+                    setEditingRecord(null)
+                  }}
+                  onClose={() => setEditingRecord(null)}
+                />
+              )}
+
+              {/* Action Menu */}
+              {activeRecordForMenu && (
+                <RecordActionMenu
+                  onEdit={() => {
+                    setEditingRecord(activeRecordForMenu)
+                    setActiveRecordForMenu(null)
+                  }}
+                  onDelete={() => {
+                    handleDeleteRecord(activeRecordForMenu.id)
+                    setActiveRecordForMenu(null)
+                  }}
+                  onClose={() => setActiveRecordForMenu(null)}
+                />
+              )}
             </div>
           )}
         </main>
