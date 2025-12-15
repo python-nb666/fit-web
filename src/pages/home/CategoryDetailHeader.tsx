@@ -2,9 +2,7 @@ import React from 'react'
 import { Icons } from '../../components/Icons'
 
 interface CategoryDetailHeaderProps {
-  categoryLabel: string
-  CategoryIcon: React.FC<any>
-  categoryColor: string
+  activeCategoryConfig: { label: string; icon: React.FC<any>; color: string }
   lastWorkoutInfo: string | null
   selectedDate: string
   onDateChange: (newDate: string) => void
@@ -14,9 +12,7 @@ interface CategoryDetailHeaderProps {
 }
 
 export const CategoryDetailHeader: React.FC<CategoryDetailHeaderProps> = ({
-  categoryLabel,
-  CategoryIcon,
-  categoryColor,
+  activeCategoryConfig,
   lastWorkoutInfo,
   selectedDate,
   onDateChange,
@@ -61,15 +57,15 @@ export const CategoryDetailHeader: React.FC<CategoryDetailHeaderProps> = ({
 
         <div className="flex items-center gap-3">
           <div className="text-right hidden md:block">
-            <div className="text-3xl font-bold">{categoryLabel}</div>
+            <div className="text-3xl font-bold">{activeCategoryConfig.label}</div>
             <div className="text-base text-purple-300 font-medium mt-1">{lastWorkoutInfo}</div>
           </div>
           {/* Mobile View for Title/Info */}
           <div className="md:hidden">
-            <div className="text-2xl font-bold text-right">{categoryLabel}</div>
+            <div className="text-2xl font-bold text-right">{activeCategoryConfig.label}</div>
             <div className="text-sm text-purple-300 font-medium text-right mt-1">{lastWorkoutInfo}</div>
           </div>
-          <CategoryIcon className={`w-10 h-10 ${categoryColor}`} />
+          <activeCategoryConfig.icon className={`w-10 h-10 ${activeCategoryConfig.color}`} />
         </div>
       </div>
 

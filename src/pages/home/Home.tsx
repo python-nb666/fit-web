@@ -224,7 +224,6 @@ export function Home() {
             </div>
 
             {/* Last Workout Summary */}
-            {/* Last Workout Summary */}
             <LastWorkoutSummary records={records} categories={categories} />
           </header>
         )}
@@ -240,9 +239,7 @@ export function Home() {
             <div className="animate-fade-in">
               {/* Detail Navigation Header */}
               <CategoryDetailHeader
-                categoryLabel={activeCategoryConfig.label}
-                CategoryIcon={activeCategoryConfig.icon}
-                categoryColor={activeCategoryConfig.color}
+                activeCategoryConfig={activeCategoryConfig}
                 lastWorkoutInfo={getLastWorkoutInfo()}
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
