@@ -76,121 +76,126 @@ export const RecordsList: React.FC<RecordsListProps> = ({
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedRecords).map(([exercise, exerciseRecords]) => {
-        const isExpanded = expandedExercises.has(exercise)
-        const shouldCollapse = exerciseRecords.length > 4
-        // Reverse first to show newest, then slice if needed
-        const reversedRecords = [...exerciseRecords].reverse()
-        const visibleRecords = shouldCollapse && !isExpanded
-          ? reversedRecords.slice(0, 4)
-          : reversedRecords
+      {Object.entries(groupedRecords)
+        .sort(([, a], [, b]) => {
+          const lastA = a[a.length - 1]
+          const lastB = b[b.length - 1]
+          return parseInt(lastB.id) - parseInt(lastA.id)
+        })
+        .map(([exercise, exerciseRecords]) => {
+          const isExpanded = expandedExercises.has(exercise)
+          const shouldCollapse = exerciseRecords.length > 4
 
-        // Calculate max weight for today
-        const maxWeight = Math.max(...exerciseRecords.map(r => r.weight))
-        const previousMax = previousMaxWeights[exercise]
-        const weightDiff = previousMax ? maxWeight - previousMax : 0
+          const visibleRecords = shouldCollapse && !isExpanded
+            ? exerciseRecords.slice(0, 4)
+            : exerciseRecords
 
-        return (
-          <div
-            key={exercise}
-            className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 transition-all"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex flex-col gap-1">
-                <h4 className="text-xl font-bold text-white">{exercise}</h4>
-                <Link
-                  to={`/exercise-history/${getExerciseSlug(exercise)}`}
-                  className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg w-fit hover:bg-purple-500/20 transition-colors flex items-center gap-1.5"
-                >
-                  <span>今日最重: {maxWeight}kg</span>
-                  {weightDiff !== 0 && (
-                    <span className={`flex items-center ${weightDiff > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {weightDiff > 0 ? '+' : ''}{weightDiff}kg
-                      {weightDiff > 0 ? <Icons.TrendingUp className="w-3 h-3 ml-0.5" /> : <Icons.TrendingDown className="w-3 h-3 ml-0.5" />}
-                    </span>
-                  )}
-                  {weightDiff === 0 && previousMax && (
-                    <span className="text-gray-400">-</span>
-                  )}
-                </Link>
-              </div>
-              <span className="text-sm text-gray-500">{exerciseRecords.length} sets</span>
-            </div>
+          // Calculate max weight for today
+          const maxWeight = Math.max(...exerciseRecords.map(r => r.weight))
+          const previousMax = previousMaxWeights[exercise]
+          const weightDiff = previousMax ? maxWeight - previousMax : 0
 
-            <div className="space-y-2">
-              {visibleRecords.map((record, idx) => (
-                <div
-                  key={record.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group select-none active:scale-[0.98] duration-200"
-                  onTouchStart={() => handleTouchStart(record)}
-                  onTouchEnd={handleTouchEnd}
-                  onTouchMove={handleTouchMove}
-                  onMouseDown={() => handleMouseDown(record)}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                >
-                  <div className="flex items-center gap-4 pointer-events-none">
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-gray-500 font-mono text-sm w-8">
-                        #{exerciseRecords.length - idx}
+          return (
+            <div
+              key={exercise}
+              className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 transition-all"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col gap-1">
+                  <h4 className="text-xl font-bold text-white">{exercise}</h4>
+                  <Link
+                    to={`/exercise-history/${getExerciseSlug(exercise)}`}
+                    className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg w-fit hover:bg-purple-500/20 transition-colors flex items-center gap-1.5"
+                  >
+                    <span>今日最重: {maxWeight}kg</span>
+                    {weightDiff !== 0 && (
+                      <span className={`flex items-center ${weightDiff > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {weightDiff > 0 ? '+' : ''}{weightDiff}kg
+                        {weightDiff > 0 ? <Icons.TrendingUp className="w-3 h-3 ml-0.5" /> : <Icons.TrendingDown className="w-3 h-3 ml-0.5" />}
                       </span>
-                      {record.time && (
-                        <span className="text-[10px] text-gray-600 font-mono">{record.time}</span>
-                      )}
-                    </div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-xl font-bold text-white">{record.reps}</span>
-                      <span className="text-xs text-gray-500 uppercase">reps</span>
-                    </div>
-                    <span className="text-gray-600">×</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg font-medium text-purple-400">{record.weight}</span>
-                      <span className="text-xs text-purple-400/70">{record.weightUnit || 'kg'}</span>
-                    </div>
-                  </div>
+                    )}
+                    {weightDiff === 0 && previousMax && (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </Link>
+                </div>
+                <span className="text-sm text-gray-500">{exerciseRecords.length} sets</span>
+              </div>
 
-                  <div className="flex items-center gap-4 pointer-events-none">
-                    <div className="text-right hidden md:block">
-                      <div className="text-xs text-gray-600 uppercase tracking-wider">Volume</div>
-                      <div className="text-sm font-light text-gray-400">
-                        {(record.reps * record.weight).toLocaleString()} {record.weightUnit || 'kg'}
+              <div className="space-y-2">
+                {visibleRecords.map((record, idx) => (
+                  <div
+                    key={record.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group select-none active:scale-[0.98] duration-200"
+                    onTouchStart={() => handleTouchStart(record)}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchMove={handleTouchMove}
+                    onMouseDown={() => handleMouseDown(record)}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                  >
+                    <div className="flex items-center gap-4 pointer-events-none">
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-gray-500 font-mono text-sm w-8">
+                          #{idx + 1}
+                        </span>
+                        {record.time && (
+                          <span className="text-[10px] text-gray-600 font-mono">{record.time}</span>
+                        )}
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold text-white">{record.reps}</span>
+                        <span className="text-xs text-gray-500 uppercase">reps</span>
+                      </div>
+                      <span className="text-gray-600">×</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-lg font-medium text-purple-400">{record.weight}</span>
+                        <span className="text-xs text-purple-400/70">{record.weightUnit || 'kg'}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 pointer-events-none">
+                      <div className="text-right hidden md:block">
+                        <div className="text-xs text-gray-600 uppercase tracking-wider">Volume</div>
+                        <div className="text-sm font-light text-gray-400">
+                          {(record.reps * record.weight).toLocaleString()} {record.weightUnit || 'kg'}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            {shouldCollapse && (
+              {shouldCollapse && (
+                <button
+                  onClick={() => toggleExpand(exercise)}
+                  className="w-full mt-3 py-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] active:bg-white/[0.08] border border-white/[0.05] text-sm font-medium text-gray-400 hover:text-white transition-all flex items-center justify-center gap-2 group"
+                >
+                  {isExpanded ? (
+                    <>
+                      <span>收起记录</span>
+                      <Icons.ChevronUp className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+                    </>
+                  ) : (
+                    <>
+                      <span>展开剩余 {exerciseRecords.length - 4} 组</span>
+                      <Icons.ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+                    </>
+                  )}
+                </button>
+              )}
+
+              {/* Quick Add Button */}
               <button
-                onClick={() => toggleExpand(exercise)}
-                className="w-full mt-3 py-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] active:bg-white/[0.08] border border-white/[0.05] text-sm font-medium text-gray-400 hover:text-white transition-all flex items-center justify-center gap-2 group"
+                onClick={() => onEditExercise(exercise)}
+                className="w-full mt-4 py-3 rounded-xl border border-dashed border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 text-gray-500 hover:text-purple-300 transition-all flex items-center justify-center gap-2 group"
               >
-                {isExpanded ? (
-                  <>
-                    <span>收起记录</span>
-                    <Icons.ChevronUp className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-                  </>
-                ) : (
-                  <>
-                    <span>展开剩余 {exerciseRecords.length - 4} 组</span>
-                    <Icons.ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-                  </>
-                )}
+                <Icons.Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span className="text-sm font-medium">Add Set</span>
               </button>
-            )}
-
-            {/* Quick Add Button */}
-            <button
-              onClick={() => onEditExercise(exercise)}
-              className="w-full mt-4 py-3 rounded-xl border border-dashed border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 text-gray-500 hover:text-purple-300 transition-all flex items-center justify-center gap-2 group"
-            >
-              <Icons.Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-medium">Add Set</span>
-            </button>
-          </div>
-        )
-      })}
+            </div>
+          )
+        })}
     </div>
   )
 }

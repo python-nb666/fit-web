@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react';
 import { Home } from './pages/home/Home'
+import CategoryPage from './pages/category/CategoryPage'
 
 import './App.css'
 
 const BodyFat = lazy(() => import('./pages/BodyFat'));
-const CategoryPage = lazy(() => import('./pages/category/CategoryPage'));
+// const CategoryPage = lazy(() => import('./pages/category/CategoryPage'));
 const ExerciseHistoryPage = lazy(() => import('./pages/exercise/ExerciseHistoryPage'));
 
 const Loading = () => (
