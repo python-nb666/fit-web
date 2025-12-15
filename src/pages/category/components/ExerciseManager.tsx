@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Icons } from '../../components/Icons'
+import { Icons } from '../../../components/Icons'
 
 interface ExerciseManagerProps {
   categoryLabel: string

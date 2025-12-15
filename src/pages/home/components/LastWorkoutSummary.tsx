@@ -2,6 +2,7 @@ import React from 'react'
 import { Icons } from '../../../components/Icons'
 import type { WorkoutRecord, WorkoutCategory } from '../../../types/workout'
 import { formatDate } from '../../../utils/date'
+import { useWorkoutStore } from '../../../stores/workoutStore'
 
 export interface CategoryConfig {
   id: WorkoutCategory
@@ -11,11 +12,12 @@ export interface CategoryConfig {
 }
 
 interface LastWorkoutSummaryProps {
-  records: WorkoutRecord[]
   categories: CategoryConfig[]
 }
 
-export const LastWorkoutSummary: React.FC<LastWorkoutSummaryProps> = ({ records, categories }) => {
+export const LastWorkoutSummary: React.FC<LastWorkoutSummaryProps> = ({ categories }) => {
+  // Store
+  const { records } = useWorkoutStore()
   let lastRecord: WorkoutRecord | null = null
   let categoryConfig: CategoryConfig | undefined | null = null
   let message = ''

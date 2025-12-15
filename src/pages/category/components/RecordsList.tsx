@@ -1,6 +1,6 @@
 import React from 'react'
-import { Icons } from '../../components/Icons'
-import type { WorkoutRecord } from '../../types/workout'
+import { Icons } from '../../../components/Icons'
+import type { WorkoutRecord } from '../../../types/workout'
 
 interface RecordsListProps {
   groupedRecords: Record<string, WorkoutRecord[]>

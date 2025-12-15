@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react';
 import { Home } from './pages/home/Home'
+import { CategoryPage } from './pages/category/CategoryPage'
 import './App.css'
+
 const BodyFat = lazy(() => import('./pages/BodyFat'));
 
 const Loading = () => (
@@ -16,7 +18,7 @@ function App() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/:categoryId" element={<Home />} />
+          <Route path="/:categoryId" element={<CategoryPage />} />
           <Route path="/body-fat" element={<BodyFat />} />
         </Routes>
       </Suspense>

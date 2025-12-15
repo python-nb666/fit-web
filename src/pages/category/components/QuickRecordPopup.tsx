@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Icons } from '../../components/Icons'
-import type { WeightUnit } from '../../types/workout'
+import { Icons } from '../../../components/Icons'
+import type { WeightUnit } from '../../../types/workout'
 
 interface QuickRecordPopupProps {
   exercise: string

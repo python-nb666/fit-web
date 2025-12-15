@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { CustomSelect } from '../../components/CustomSelect'
-import type { WorkoutRecord, WeightUnit } from '../../types/workout'
+import { CustomSelect } from '../../../components/CustomSelect'
+import type { WorkoutRecord, WeightUnit } from '../../../types/workout'
 
 interface AddRecordFormProps {
   exercises: string[]
