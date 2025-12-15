@@ -30,6 +30,13 @@ export const RecordsList: React.FC<RecordsListProps> = ({
     }
   }
 
+  const handleTouchMove = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }
+
   // Mouse events for desktop testing
   const handleMouseDown = (record: WorkoutRecord) => {
     timerRef.current = setTimeout(() => {
@@ -70,6 +77,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
                 className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group select-none active:scale-[0.98] duration-200"
                 onTouchStart={() => handleTouchStart(record)}
                 onTouchEnd={handleTouchEnd}
+                onTouchMove={handleTouchMove}
                 onMouseDown={() => handleMouseDown(record)}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
