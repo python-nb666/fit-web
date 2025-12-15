@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Icons } from '../../components/Icons'
+import { Icons } from '@/components/Icons'
 import { ExerciseManager } from './components/ExerciseManager'
 import { AddRecordForm } from './components/AddRecordForm'
 import { RecordsList } from './components/RecordsList'
-import { CategoryDetailHeader } from '../home/CategoryDetailHeader'
+import { CategoryDetailHeader } from '@/pages/home/CategoryDetailHeader'
 import { QuickRecordPopup } from './components/QuickRecordPopup'
 import { RecordActionMenu } from './components/RecordActionMenu'
-import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '../../types/workout'
-import { useWorkoutStore } from '../../stores/workoutStore'
-import { categories } from '../../constants/categories'
+import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '@/types/workout'
+import { useWorkoutStore } from '@/stores/workoutStore'
+import { categories } from '@/constants/categories'
 
 export function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>()

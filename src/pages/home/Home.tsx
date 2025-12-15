@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Icons } from '../../components/Icons'
-import '../../App.css'
+import { Icons } from '@/components/Icons'
+import '@/App.css'
 import CategoryGrid from './CategoryGrid'
 import { ClearLocalModal } from './components/ClearLocalModal'
 import { LastWorkoutSummary } from './components/LastWorkoutSummary'
-import { useWorkoutStore } from '../../stores/workoutStore'
-import { categories } from '../../constants/categories'
+import { categories } from '@/constants/categories'
 
 
 
