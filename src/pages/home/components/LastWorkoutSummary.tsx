@@ -1,6 +1,7 @@
 import React from 'react'
 import { Icons } from '../../../components/Icons'
 import type { WorkoutRecord, WorkoutCategory } from '../../../types/workout'
+import { formatDate } from '../../../utils/date'
 
 export interface CategoryConfig {
   id: WorkoutCategory
@@ -39,7 +40,7 @@ export const LastWorkoutSummary: React.FC<LastWorkoutSummaryProps> = ({ records,
     const diffTime = new Date(todayStr).getTime() - new Date(lastRecord!.date).getTime()
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-    dateDisplay = lastRecord!.date
+    dateDisplay = formatDate(lastRecord!.date)
     label = categoryConfig?.label || lastRecord!.category
     if (categoryConfig) {
       IconComponent = categoryConfig.icon
@@ -67,7 +68,7 @@ export const LastWorkoutSummary: React.FC<LastWorkoutSummaryProps> = ({ records,
     message = '今天还没有锻炼，加油！'
     emoji = '👋'
     textColor = 'text-blue-400'
-    dateDisplay = new Date().toISOString().split('T')[0]
+    dateDisplay = formatDate(new Date().toISOString().split('T')[0])
     label = '开始记录'
   }
 
