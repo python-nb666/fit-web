@@ -13,7 +13,7 @@ import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '../../types/wor
 import { ClearLocalModal } from './components/ClearLocalModal'
 import { LastWorkoutSummary } from './components/LastWorkoutSummary'
 import { useWorkoutStore } from '../../stores/workoutStore'
-import { formatDate } from '../../utils/date'
+
 
 // -----------------------------------------------------------------------------
 // Configuration & Types
@@ -73,28 +73,6 @@ export function Home() {
   const [activeRecordForMenu, setActiveRecordForMenu] = useState<WorkoutRecord | null>(null)
   const [editingRecord, setEditingRecord] = useState<WorkoutRecord | null>(null)
   const [showClearCacheConfirm, setShowClearCacheConfirm] = useState(false)
-
-  // Helpers
-
-  const getLastWorkoutInfo = () => {
-    if (!selectedCategory) return null
-
-    const today = new Date().toISOString().split('T')[0]
-
-    // Filter records for this category, excluding today
-    const historyDates = records
-      .filter(r => r.category === selectedCategory && r.date < today)
-      .map(r => r.date)
-      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // Sort desc
-
-    if (historyDates.length === 0) return '首次训练'
-
-    const lastDate = historyDates[0]
-    const diffTime = Math.abs(new Date(today).getTime() - new Date(lastDate).getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-    return `上次训练：${diffDays}天前 (${formatDate(lastDate)})`
-  }
 
   // Exercise Management Logic
   const handleAddExercise = (name: string) => {
@@ -200,7 +178,8 @@ export function Home() {
               {/* Detail Navigation Header */}
               <CategoryDetailHeader
                 activeCategoryConfig={activeCategoryConfig}
-                lastWorkoutInfo={getLastWorkoutInfo()}
+                records={records}
+                selectedCategory={selectedCategory}
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
                 onBack={() => {

@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Icons } from '../../components/Icons'
 import { formatDate } from '../../utils/date'
+import type { WorkoutRecord, WorkoutCategory } from '../../types/workout'
 
 interface CategoryDetailHeaderProps {
   activeCategoryConfig: { label: string; icon: React.FC<any>; color: string }
-  lastWorkoutInfo: string | null
+  records: WorkoutRecord[]
+  selectedCategory: WorkoutCategory
   selectedDate: string
   onDateChange: (newDate: string) => void
   onBack: () => void
@@ -14,13 +16,34 @@ interface CategoryDetailHeaderProps {
 
 export const CategoryDetailHeader: React.FC<CategoryDetailHeaderProps> = ({
   activeCategoryConfig,
-  lastWorkoutInfo,
+  records,
+  selectedCategory,
   selectedDate,
   onDateChange,
   onBack,
   showExerciseManager,
   onToggleExerciseManager
 }) => {
+  const lastWorkoutInfo = useMemo(() => {
+    if (!selectedCategory) return null
+
+    const today = new Date().toISOString().split('T')[0]
+
+    // Filter records for this category, excluding today
+    const historyDates = records
+      .filter(r => r.category === selectedCategory && r.date < today)
+      .map(r => r.date)
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // Sort desc
+
+    if (historyDates.length === 0) return '首次训练'
+
+    const lastDate = historyDates[0]
+    const diffTime = Math.abs(new Date(today).getTime() - new Date(lastDate).getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    return `上次训练：${diffDays}天前 (${formatDate(lastDate)})`
+  }, [records, selectedCategory])
+
   const changeDate = (days: number) => {
     const date = new Date(selectedDate)
     date.setDate(date.getDate() + days)
