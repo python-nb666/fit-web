@@ -1,6 +1,8 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Icons } from '../../../components/Icons'
 import type { WorkoutRecord } from '../../../types/workout'
+import { getExerciseSlug } from '@/utils/exerciseMapping'
 
 interface RecordsListProps {
   groupedRecords: Record<string, WorkoutRecord[]>
@@ -81,13 +83,25 @@ export const RecordsList: React.FC<RecordsListProps> = ({
           ? reversedRecords.slice(0, 4)
           : reversedRecords
 
+        // Calculate max weight for today
+        const maxWeight = Math.max(...exerciseRecords.map(r => r.weight))
+
         return (
           <div
             key={exercise}
             className="bg-white/[0.02] border border-white/[0.05] rounded-3xl p-6 transition-all"
           >
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-xl font-bold text-white">{exercise}</h4>
+              <div className="flex flex-col gap-1">
+                <h4 className="text-xl font-bold text-white">{exercise}</h4>
+                <Link
+                  to={`/exercise-history/${getExerciseSlug(exercise)}`}
+                  className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg w-fit hover:bg-purple-500/20 transition-colors flex items-center gap-1"
+                >
+                  <span>今日最重: {maxWeight}kg</span>
+                  <Icons.TrendingUp className="w-3 h-3" />
+                </Link>
+              </div>
               <span className="text-sm text-gray-500">{exerciseRecords.length} sets</span>
             </div>
 
