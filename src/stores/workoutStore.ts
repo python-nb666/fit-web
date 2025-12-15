@@ -21,6 +21,7 @@ interface WorkoutState {
   updateRecord: (id: string, data: Partial<WorkoutRecord>) => void;
   addExercise: (category: WorkoutCategory, name: string) => void;
   removeExercise: (category: WorkoutCategory, name: string) => void;
+  reorderExercises: (category: WorkoutCategory, newOrder: string[]) => void;
   clearRecords: () => void;
 }
 
@@ -66,6 +67,14 @@ export const useWorkoutStore = create<WorkoutState>()(
             [category]: (state.exercises[category] || []).filter(
               (e) => e !== name
             ),
+          },
+        })),
+
+      reorderExercises: (category, newOrder) =>
+        set((state) => ({
+          exercises: {
+            ...state.exercises,
+            [category]: newOrder,
           },
         })),
 

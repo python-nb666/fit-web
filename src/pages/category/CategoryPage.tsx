@@ -30,7 +30,8 @@ export default function CategoryPage() {
     deleteRecord,
     updateRecord,
     addExercise,
-    removeExercise
+    removeExercise,
+    reorderExercises
   } = useWorkoutStore()
 
   // Exercise Manager State
@@ -140,6 +141,7 @@ export default function CategoryPage() {
       <div className="relative max-w-3xl mx-auto px-6 py-12 md:py-20">
         <div className="animate-fade-in">
           {/* Detail Navigation Header */}
+          {/* Detail Navigation Header */}
           <CategoryDetailHeader
             activeCategoryConfig={activeCategoryConfig}
             records={records}
@@ -160,6 +162,11 @@ export default function CategoryPage() {
               exercises={currentCategoryExercises}
               onAddExercise={handleAddExercise}
               onRemoveExercise={handleRemoveExercise}
+              onReorder={(newOrder) => {
+                if (selectedCategory) {
+                  reorderExercises(selectedCategory, newOrder)
+                }
+              }}
             />
           )}
 
