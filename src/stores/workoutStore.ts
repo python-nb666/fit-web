@@ -1,10 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type {
-  WorkoutCategory,
-  WorkoutRecord,
-  WeightUnit,
-} from "../types/workout";
+import type { WorkoutCategory, WorkoutRecord } from "../types/workout";
 
 export const DEFAULT_EXERCISES: Record<WorkoutCategory, string[]> = {
   chest: ["杠铃卧推", "哑铃卧推", "上斜卧推", "双杠臂屈伸", "绳索夹胸"],
