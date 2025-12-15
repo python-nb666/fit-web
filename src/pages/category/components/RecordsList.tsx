@@ -71,7 +71,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
           </div>
 
           <div className="space-y-2">
-            {exerciseRecords.map((record, idx) => (
+            {[...exerciseRecords].reverse().map((record, idx) => (
               <div
                 key={record.id}
                 className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group select-none active:scale-[0.98] duration-200"
@@ -84,7 +84,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
               >
                 <div className="flex items-center gap-4 pointer-events-none">
                   <div className="flex flex-col items-center gap-1">
-                    <span className="text-gray-500 font-mono text-sm w-8">#{idx + 1}</span>
+                    <span className="text-gray-500 font-mono text-sm w-8">#{exerciseRecords.length - idx}</span>
                     {record.time && (
                       <span className="text-[10px] text-gray-600 font-mono">{record.time}</span>
                     )}
