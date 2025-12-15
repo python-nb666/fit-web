@@ -138,17 +138,17 @@ export const RecordsList: React.FC<RecordsListProps> = ({
             {shouldCollapse && (
               <button
                 onClick={() => toggleExpand(exercise)}
-                className="w-full mt-2 py-2 text-xs text-gray-500 hover:text-white transition-colors flex items-center justify-center gap-1"
+                className="w-full mt-3 py-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] active:bg-white/[0.08] border border-white/[0.05] text-sm font-medium text-gray-400 hover:text-white transition-all flex items-center justify-center gap-2 group"
               >
                 {isExpanded ? (
                   <>
-                    <span>收起</span>
-                    <Icons.ChevronUp className="w-3 h-3" />
+                    <span>收起记录</span>
+                    <Icons.ChevronUp className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                   </>
                 ) : (
                   <>
-                    <span>展开更多 ({exerciseRecords.length - 4})</span>
-                    <Icons.ChevronDown className="w-3 h-3" />
+                    <span>展开剩余 {exerciseRecords.length - 4} 组</span>
+                    <Icons.ChevronDown className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                   </>
                 )}
               </button>
