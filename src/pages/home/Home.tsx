@@ -12,6 +12,7 @@ import { RecordActionMenu } from './RecordActionMenu'
 import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '../../types/workout'
 import { ClearLocalModal } from './components/ClearLocalModal'
 import { LastWorkoutSummary } from './components/LastWorkoutSummary'
+import { useWorkoutStore } from '../../stores/workoutStore'
 
 // -----------------------------------------------------------------------------
 // Configuration & Types
@@ -25,15 +26,6 @@ const categories: { id: WorkoutCategory; label: string; icon: React.FC<any>; col
   { id: 'arms', label: '手臂', icon: Icons.Arms, color: 'text-violet-400' },
   { id: 'core', label: '核心', icon: Icons.Core, color: 'text-indigo-400' },
 ]
-
-const DEFAULT_EXERCISES: Record<WorkoutCategory, string[]> = {
-  chest: ['杠铃卧推', '哑铃卧推', '上斜卧推', '双杠臂屈伸', '绳索夹胸'],
-  back: ['引体向上', '杠铃划船', '高位下拉', '坐姿划船', '直臂下压'],
-  shoulders: ['坐姿推举', '哑铃侧平举', '面拉', '前平举', '反向飞鸟'],
-  legs: ['深蹲', '硬拉', '腿举', '哈克深蹲', '腿屈伸'],
-  arms: ['杠铃弯举', '哑铃弯举', '绳索下压', '仰卧臂屈伸'],
-  core: ['卷腹', '平板支撑', '悬垂举腿', '俄罗斯转体']
-}
 
 // -----------------------------------------------------------------------------
 // Main Component
@@ -50,36 +42,19 @@ export function Home() {
 
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
-  // Records State
-  const [records, setRecords] = useState<WorkoutRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('fit_records')
-      return saved ? JSON.parse(saved) : []
-    } catch (e) {
-      return []
-    }
-  })
-
-  // Exercises State
-  const [exercises, setExercises] = useState<Record<WorkoutCategory, string[]>>(() => {
-    try {
-      const saved = localStorage.getItem('fit_exercises')
-      return saved ? JSON.parse(saved) : DEFAULT_EXERCISES
-    } catch (e) {
-      return DEFAULT_EXERCISES
-    }
-  })
+  // Store
+  const {
+    records,
+    exercises,
+    addRecord,
+    deleteRecord,
+    updateRecord,
+    addExercise,
+    removeExercise
+  } = useWorkoutStore()
 
   // Exercise Manager State
   const [showExerciseManager, setShowExerciseManager] = useState(false)
-
-  useEffect(() => {
-    localStorage.setItem('fit_records', JSON.stringify(records))
-  }, [records])
-
-  useEffect(() => {
-    localStorage.setItem('fit_exercises', JSON.stringify(exercises))
-  }, [exercises])
 
   // Reset state when entering a category
   useEffect(() => {
@@ -137,21 +112,12 @@ export function Home() {
   // Exercise Management Logic
   const handleAddExercise = (name: string) => {
     if (!name || !selectedCategory) return
-    const current = exercises[selectedCategory] || []
-    if (current.includes(name)) return
-
-    setExercises({
-      ...exercises,
-      [selectedCategory]: [...current, name]
-    })
+    addExercise(selectedCategory, name)
   }
 
   const handleRemoveExercise = (name: string) => {
     if (!selectedCategory) return
-    setExercises({
-      ...exercises,
-      [selectedCategory]: (exercises[selectedCategory] || []).filter(e => e !== name)
-    })
+    removeExercise(selectedCategory, name)
   }
 
   // Record Logic
@@ -165,11 +131,11 @@ export function Home() {
       date: selectedDate,
       time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     }
-    setRecords([newRecord, ...records])
+    addRecord(newRecord)
   }
 
   const handleDeleteRecord = (id: string) => {
-    setRecords(records.filter(r => r.id !== id))
+    deleteRecord(id)
   }
 
   const activeCategoryConfig = categories.find(c => c.id === selectedCategory)
@@ -335,11 +301,7 @@ export function Home() {
                   }}
                   onSave={(data) => {
                     // Update existing record
-                    setRecords(records.map(r =>
-                      r.id === editingRecord.id
-                        ? { ...r, ...data }
-                        : r
-                    ))
+                    updateRecord(editingRecord.id, data)
                     setEditingRecord(null)
                   }}
                   onClose={() => setEditingRecord(null)}
