@@ -101,6 +101,30 @@ export default function CategoryPage() {
     groupedRecords[key].sort((a, b) => parseInt(a.id) - parseInt(b.id))
   })
 
+  // Calculate previous max weights for comparison
+  const previousMaxWeights: Record<string, number> = {}
+
+  Object.keys(groupedRecords).forEach(exercise => {
+    // Filter records for this exercise that are BEFORE the selected date
+    const previousRecords = records.filter(r =>
+      r.exercise === exercise &&
+      r.date < selectedDate
+    )
+
+    if (previousRecords.length > 0) {
+      // Sort by date descending to find the most recent previous session
+      previousRecords.sort((a, b) => b.date.localeCompare(a.date))
+      const lastDate = previousRecords[0].date
+
+      // Get all records for that last date
+      const lastSessionRecords = previousRecords.filter(r => r.date === lastDate)
+
+      // Find max weight
+      const maxWeight = Math.max(...lastSessionRecords.map(r => r.weight))
+      previousMaxWeights[exercise] = maxWeight
+    }
+  })
+
   if (!selectedCategory || !activeCategoryConfig) {
     return <div className="text-white text-center mt-20">Category not found</div>
   }
@@ -174,6 +198,7 @@ export default function CategoryPage() {
           {/* Records List (Grouped) */}
           <RecordsList
             groupedRecords={groupedRecords}
+            previousMaxWeights={previousMaxWeights}
             onEditExercise={(exercise) => {
               // Find last record for this exercise
               const exerciseRecords = records.filter(r => r.exercise === exercise).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || parseInt(b.id) - parseInt(a.id));

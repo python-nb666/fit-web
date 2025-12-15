@@ -6,6 +6,7 @@ import { getExerciseSlug } from '@/utils/exerciseMapping'
 
 interface RecordsListProps {
   groupedRecords: Record<string, WorkoutRecord[]>
+  previousMaxWeights: Record<string, number>
   onEditExercise: (exerciseName: string) => void
   onLongPressRecord: (record: WorkoutRecord) => void
   showAddForm: boolean
@@ -13,6 +14,7 @@ interface RecordsListProps {
 
 export const RecordsList: React.FC<RecordsListProps> = ({
   groupedRecords,
+  previousMaxWeights,
   onEditExercise, // This is now "Add Set"
   onLongPressRecord,
   showAddForm
@@ -85,6 +87,8 @@ export const RecordsList: React.FC<RecordsListProps> = ({
 
         // Calculate max weight for today
         const maxWeight = Math.max(...exerciseRecords.map(r => r.weight))
+        const previousMax = previousMaxWeights[exercise]
+        const weightDiff = previousMax ? maxWeight - previousMax : 0
 
         return (
           <div
@@ -96,10 +100,18 @@ export const RecordsList: React.FC<RecordsListProps> = ({
                 <h4 className="text-xl font-bold text-white">{exercise}</h4>
                 <Link
                   to={`/exercise-history/${getExerciseSlug(exercise)}`}
-                  className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg w-fit hover:bg-purple-500/20 transition-colors flex items-center gap-1"
+                  className="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg w-fit hover:bg-purple-500/20 transition-colors flex items-center gap-1.5"
                 >
                   <span>今日最重: {maxWeight}kg</span>
-                  <Icons.TrendingUp className="w-3 h-3" />
+                  {weightDiff !== 0 && (
+                    <span className={`flex items-center ${weightDiff > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {weightDiff > 0 ? '+' : ''}{weightDiff}kg
+                      {weightDiff > 0 ? <Icons.TrendingUp className="w-3 h-3 ml-0.5" /> : <Icons.TrendingDown className="w-3 h-3 ml-0.5" />}
+                    </span>
+                  )}
+                  {weightDiff === 0 && previousMax && (
+                    <span className="text-gray-400">-</span>
+                  )}
                 </Link>
               </div>
               <span className="text-sm text-gray-500">{exerciseRecords.length} sets</span>
