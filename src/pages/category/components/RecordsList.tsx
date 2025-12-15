@@ -20,7 +20,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
   const handleTouchStart = (record: WorkoutRecord) => {
     timerRef.current = setTimeout(() => {
       onLongPressRecord(record)
-    }, 500)
+    }, 300)
   }
 
   const handleTouchEnd = () => {
@@ -41,7 +41,7 @@ export const RecordsList: React.FC<RecordsListProps> = ({
   const handleMouseDown = (record: WorkoutRecord) => {
     timerRef.current = setTimeout(() => {
       onLongPressRecord(record)
-    }, 500)
+    }, 300)
   }
 
   const handleMouseUp = () => {
