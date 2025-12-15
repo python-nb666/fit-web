@@ -1,8 +1,8 @@
 
+import { Link } from 'react-router-dom'
 import type { WorkoutCategory } from '../../types/workout'
 
 interface Props {
-  setSelectedCategory: (category: WorkoutCategory) => void
   categories: { id: WorkoutCategory; label: string; icon: React.FC<any>; color: string }[]
 }
 
@@ -10,9 +10,9 @@ export default function CategoryGrid(props: Props) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {props.categories.map((cat) => (
-        <button
+        <Link
           key={cat.id}
-          onClick={() => props.setSelectedCategory(cat.id)}
+          to={`/${cat.id}`}
           className="group relative flex flex-col items-start justify-between p-6 h-40 md:h-48 rounded-3xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/10 transition-all duration-500 overflow-hidden"
         >
           <div className={`p-3 rounded-2xl bg-white/[0.03] group-hover:scale-110 transition-transform duration-500`}>
@@ -26,7 +26,7 @@ export default function CategoryGrid(props: Props) {
               →
             </span>
           </div>
-        </button>
+        </Link>
       ))}
     </div>
   )

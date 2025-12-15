@@ -16,6 +16,7 @@ function App() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/:categoryId" element={<Home />} />
           <Route path="/body-fat" element={<BodyFat />} />
         </Routes>
       </Suspense>

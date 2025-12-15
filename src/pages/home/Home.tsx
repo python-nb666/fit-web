@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Icons } from '../../components/Icons'
 import '../../App.css'
 import CategoryGrid from './CategoryGrid'
@@ -40,7 +40,14 @@ const DEFAULT_EXERCISES: Record<WorkoutCategory, string[]> = {
 // -----------------------------------------------------------------------------
 
 export function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<WorkoutCategory | null>(null)
+  const { categoryId } = useParams<{ categoryId: string }>()
+  const navigate = useNavigate()
+
+  // Validate categoryId
+  const selectedCategory = categories.some(c => c.id === categoryId)
+    ? (categoryId as WorkoutCategory)
+    : null
+
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
 
   // Records State
@@ -231,7 +238,7 @@ export function Home() {
         <main>
           {/* CATEGORY GRID */}
           {!selectedCategory && (
-            <CategoryGrid setSelectedCategory={setSelectedCategory} categories={categories} />
+            <CategoryGrid categories={categories} />
           )}
 
           {/* RECORDS VIEW */}
@@ -244,7 +251,7 @@ export function Home() {
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate}
                 onBack={() => {
-                  setSelectedCategory(null)
+                  navigate('/')
                   setShowAddForm(false)
                 }}
                 showExerciseManager={showExerciseManager}
