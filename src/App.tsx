@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react';
 import { Home } from './pages/home/Home'
-import { CategoryPage } from './pages/category/CategoryPage'
+
 import './App.css'
 
 const BodyFat = lazy(() => import('./pages/BodyFat'));
+const CategoryPage = lazy(() => import('./pages/category/CategoryPage'));
 
 const Loading = () => (
   <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">

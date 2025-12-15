@@ -11,7 +11,7 @@ import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '@/types/workout
 import { useWorkoutStore } from '@/stores/workoutStore'
 import { categories } from '@/constants/categories'
 
-export function CategoryPage() {
+export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>()
   const navigate = useNavigate()
 
