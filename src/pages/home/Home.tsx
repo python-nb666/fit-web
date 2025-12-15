@@ -29,7 +29,7 @@ export function Home() {
           <div className="flex justify-between items-start mb-8">
             <div>
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
-                FitTracker<span className="text-purple-500">.</span>
+                Fit Tracker<span className="text-purple-500">.</span>
               </h1>
               <p className="text-gray-500 text-lg tracking-wide">Minimalist Workout Log</p>
             </div>
