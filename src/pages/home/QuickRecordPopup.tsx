@@ -7,13 +7,15 @@ interface QuickRecordPopupProps {
   initialValues?: { reps: number; weight: number; weightUnit: WeightUnit }
   onSave: (data: { reps: number; weight: number; weightUnit: WeightUnit }) => void
   onClose: () => void
+  submitLabel?: string
 }
 
 export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
   exercise,
   initialValues,
   onSave,
-  onClose
+  onClose,
+  submitLabel = initialValues ? 'Update Set' : 'Add Set'
 }) => {
   const [reps, setReps] = useState(0)
   const [weight, setWeight] = useState(0)
@@ -106,21 +108,29 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
                 <Icons.Plus className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex justify-center gap-2 mt-3">
-              <button
-                onClick={() => setWeightUnit('kg')}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${weightUnit === 'kg' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                  }`}
-              >
-                kg
-              </button>
-              <button
-                onClick={() => setWeightUnit('lbs')}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${weightUnit === 'lbs' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                  }`}
-              >
-                lbs
-              </button>
+
+            {/* Sliding Unit Toggle */}
+            <div className="flex justify-center mt-3">
+              <div className="relative flex bg-white/5 rounded-lg p-1 cursor-pointer">
+                <div
+                  className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-purple-600 rounded-md transition-all duration-300 ease-out ${weightUnit === 'kg' ? 'left-1' : 'left-[calc(50%+0px)]'
+                    }`}
+                />
+                <button
+                  onClick={() => setWeightUnit('kg')}
+                  className={`relative z-10 px-4 py-1 text-xs font-medium transition-colors duration-300 ${weightUnit === 'kg' ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  kg
+                </button>
+                <button
+                  onClick={() => setWeightUnit('lbs')}
+                  className={`relative z-10 px-4 py-1 text-xs font-medium transition-colors duration-300 ${weightUnit === 'lbs' ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  lbs
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -130,7 +140,7 @@ export const QuickRecordPopup: React.FC<QuickRecordPopupProps> = ({
           disabled={reps === 0}
           className="w-full py-4 rounded-xl bg-purple-600 text-white font-bold text-lg hover:bg-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-900/20"
         >
-          {initialValues ? 'Update Set' : 'Add Set'}
+          {submitLabel}
         </button>
         <div className="h-6" /> {/* Safe area spacer */}
       </div>

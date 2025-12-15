@@ -69,6 +69,7 @@ export function Home() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [initialExerciseForForm, setInitialExerciseForForm] = useState('')
   const [quickAddExercise, setQuickAddExercise] = useState<string | null>(null)
+  const [quickAddInitialValues, setQuickAddInitialValues] = useState<{ reps: number; weight: number; weightUnit: WeightUnit } | undefined>(undefined)
   const [activeRecordForMenu, setActiveRecordForMenu] = useState<WorkoutRecord | null>(null)
   const [editingRecord, setEditingRecord] = useState<WorkoutRecord | null>(null)
   const [showClearCacheConfirm, setShowClearCacheConfirm] = useState(false)
@@ -256,6 +257,19 @@ export function Home() {
               <RecordsList
                 groupedRecords={groupedRecords}
                 onEditExercise={(exercise) => {
+                  // Find last record for this exercise
+                  const exerciseRecords = records.filter(r => r.exercise === exercise).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || parseInt(b.id) - parseInt(a.id));
+                  const lastRecord = exerciseRecords[0];
+
+                  if (lastRecord) {
+                    setQuickAddInitialValues({
+                      reps: lastRecord.reps,
+                      weight: lastRecord.weight,
+                      weightUnit: lastRecord.weightUnit
+                    })
+                  } else {
+                    setQuickAddInitialValues(undefined)
+                  }
                   setQuickAddExercise(exercise)
                 }}
                 onLongPressRecord={(record) => {
@@ -268,6 +282,8 @@ export function Home() {
               {quickAddExercise && (
                 <QuickRecordPopup
                   exercise={quickAddExercise}
+                  initialValues={quickAddInitialValues}
+                  submitLabel="Add Set"
                   onSave={(data) => {
                     handleAddRecord({ exercise: quickAddExercise, ...data })
                     setQuickAddExercise(null)
@@ -285,6 +301,7 @@ export function Home() {
                     weight: editingRecord.weight,
                     weightUnit: editingRecord.weightUnit
                   }}
+                  submitLabel="Update Set"
                   onSave={(data) => {
                     // Update existing record
                     updateRecord(editingRecord.id, data)
