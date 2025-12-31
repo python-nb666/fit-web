@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import type { WorkoutCategory } from '../../types/workout'
 import { Card, CardContent } from "@/components/ui/card"
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 
 interface Props {
   categories: { id: WorkoutCategory; label: string; icon: React.FC<any>; color: string }[]
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -17,7 +17,7 @@ const containerVariants = {
   }
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, scale: 0.9, y: 20 },
   visible: {
     opacity: 1,
