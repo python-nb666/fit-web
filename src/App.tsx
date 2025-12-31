@@ -15,7 +15,16 @@ const Loading = () => (
   </div>
 )
 
+import { useEffect } from 'react';
+import { useWorkoutStore } from './stores/workoutStore';
+
 function App() {
+  const fetchExercises = useWorkoutStore((state) => state.fetchExercises);
+
+  useEffect(() => {
+    fetchExercises();
+  }, [fetchExercises]);
+
   return (
     <BrowserRouter basename="/fit-web/">
       <Suspense fallback={<Loading />}>

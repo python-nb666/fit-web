@@ -2,13 +2,15 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { WorkoutCategory, WorkoutRecord } from "../types/workout";
 
-export const DEFAULT_EXERCISES: Record<WorkoutCategory, string[]> = {
-  chest: ["杠铃卧推", "哑铃卧推", "上斜卧推", "双杠臂屈伸", "绳索夹胸"],
-  back: ["引体向上", "杠铃划船", "高位下拉", "坐姿划船", "直臂下压"],
-  shoulders: ["坐姿推举", "哑铃侧平举", "面拉", "前平举", "反向飞鸟"],
-  legs: ["深蹲", "硬拉", "腿举", "哈克深蹲", "腿屈伸"],
-  arms: ["杠铃弯举", "哑铃弯举", "绳索下压", "仰卧臂屈伸"],
-  core: ["卷腹", "平板支撑", "悬垂举腿", "俄罗斯转体"],
+import { getExercises } from "../api/exercises";
+
+const INITIAL_EXERCISES: Record<WorkoutCategory, string[]> = {
+  chest: [],
+  back: [],
+  shoulders: [],
+  legs: [],
+  arms: [],
+  core: [],
 };
 
 interface WorkoutState {
@@ -23,13 +25,23 @@ interface WorkoutState {
   removeExercise: (category: WorkoutCategory, name: string) => void;
   reorderExercises: (category: WorkoutCategory, newOrder: string[]) => void;
   clearRecords: () => void;
+  fetchExercises: () => Promise<void>;
 }
 
 export const useWorkoutStore = create<WorkoutState>()(
   persist(
     (set) => ({
       records: [],
-      exercises: DEFAULT_EXERCISES,
+      exercises: INITIAL_EXERCISES,
+
+      fetchExercises: async () => {
+        try {
+          const data = await getExercises();
+          set({ exercises: data });
+        } catch (error) {
+          console.error("Failed to fetch exercises", error);
+        }
+      },
 
       addRecord: (record) =>
         set((state) => ({
