@@ -20,10 +20,12 @@ import { useWorkoutStore } from './stores/workoutStore';
 
 function App() {
   const fetchExercises = useWorkoutStore((state) => state.fetchExercises);
+  const fetchRecords = useWorkoutStore((state) => state.fetchRecords);
 
   useEffect(() => {
     fetchExercises();
-  }, [fetchExercises]);
+    fetchRecords();
+  }, [fetchExercises, fetchRecords]);
 
   return (
     <BrowserRouter basename="/fit-web/">
