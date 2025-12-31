@@ -10,6 +10,7 @@ import { RecordActionMenu } from './components/RecordActionMenu'
 import type { WorkoutCategory, WorkoutRecord, WeightUnit } from '@/types/workout'
 import { useWorkoutStore } from '@/stores/workoutStore'
 import { categories } from '@/constants/categories'
+import { createRecord, deleteRecord as deleteRecordApi, updateRecord as updateRecordApi } from '@/api/records'
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>()
@@ -26,6 +27,7 @@ export default function CategoryPage() {
   const {
     records,
     exercises,
+    exerciseIdMap,
     addRecord,
     deleteRecord,
     updateRecord,
@@ -65,21 +67,47 @@ export default function CategoryPage() {
   }
 
   // Record Logic
-  const handleAddRecord = (data: { exercise: string; reps: number; weight: number; weightUnit: WeightUnit }) => {
+  const handleAddRecord = async (data: { exercise: string; reps: number; weight: number; weightUnit: WeightUnit }) => {
     if (!selectedCategory) return
     const newRecord: WorkoutRecord = {
       id: Date.now().toString(),
       category: selectedCategory,
       ...data,
-      sets: 1, // Always 1 set per record now
+      sets: 1,
       date: selectedDate,
       time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     }
+
+    // 1. Update Store (Optimistic)
     addRecord(newRecord)
+
+    // 2. Persist to API
+    try {
+      const exerciseId = exerciseIdMap[data.exercise]
+      if (exerciseId) {
+        await createRecord({
+          userId: 1,
+          exerciseId,
+          reps: data.reps,
+          weight: data.weight,
+          weightUnit: data.weightUnit,
+          sets: 1,
+          date: selectedDate,
+          time: newRecord.time || "00:00:00",
+        })
+      }
+    } catch (error) {
+      console.error("Failed to save record:", error)
+    }
   }
 
-  const handleDeleteRecord = (id: string) => {
+  const handleDeleteRecord = async (id: string) => {
     deleteRecord(id)
+    try {
+      await deleteRecordApi(id)
+    } catch (error) {
+      console.error("Failed to delete record:", error)
+    }
   }
 
   const activeCategoryConfig = categories.find(c => c.id === selectedCategory)
@@ -252,10 +280,15 @@ export default function CategoryPage() {
                 weightUnit: editingRecord.weightUnit
               }}
               submitLabel="Update Set"
-              onSave={(data) => {
+              onSave={async (data) => {
                 // Update existing record
                 updateRecord(editingRecord.id, data)
                 setEditingRecord(null)
+                try {
+                  await updateRecordApi(editingRecord.id, data)
+                } catch (error) {
+                  console.error("Failed to update record:", error)
+                }
               }}
               onClose={() => setEditingRecord(null)}
             />

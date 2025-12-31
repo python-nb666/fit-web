@@ -17,15 +17,45 @@ const Loading = () => (
 
 import { useEffect } from 'react';
 import { useWorkoutStore } from './stores/workoutStore';
+import { getExercises } from './api/exercises';
+import { getRecords } from './api/records';
+import type { WorkoutCategory, WorkoutRecord } from './types/workout';
 
 function App() {
-  const fetchExercises = useWorkoutStore((state) => state.fetchExercises);
-  const fetchRecords = useWorkoutStore((state) => state.fetchRecords);
+  const setExercises = useWorkoutStore((state) => state.setExercises);
+  const setRecords = useWorkoutStore((state) => state.setRecords);
 
   useEffect(() => {
-    fetchExercises();
-    fetchRecords();
-  }, [fetchExercises, fetchRecords]);
+    const initData = async () => {
+      try {
+        // Fetch Exercises
+        const { categories, idMap } = await getExercises();
+        setExercises(categories, idMap);
+
+        // Fetch Records
+        const apiRecords = await getRecords(1);
+        const transformedRecords: WorkoutRecord[] = apiRecords.map((r: any) => {
+          const workoutDate = new Date(r.workoutTime);
+          return {
+            id: r.id.toString(),
+            category: r.exercise.category.slug as WorkoutCategory,
+            exercise: r.exercise.name,
+            sets: r.sets,
+            reps: r.reps,
+            weight: r.weight,
+            weightUnit: r.weightUnit as any,
+            date: workoutDate.toISOString().split('T')[0],
+            time: workoutDate.toTimeString().split(' ')[0],
+          };
+        });
+        setRecords(transformedRecords);
+      } catch (error) {
+        console.error("Failed to initialize data:", error);
+      }
+    };
+
+    initData();
+  }, [setExercises, setRecords]);
 
   return (
     <BrowserRouter basename="/fit-web/">
