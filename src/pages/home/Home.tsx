@@ -6,26 +6,38 @@ import CategoryGrid from './CategoryGrid'
 import { ClearLocalModal } from './components/ClearLocalModal'
 import { LastWorkoutSummary } from './components/LastWorkoutSummary'
 import { categories } from '@/constants/categories'
-
-
+import { motion } from 'framer-motion'
 
 export function Home() {
   const [showClearCacheConfirm, setShowClearCacheConfirm] = useState(false)
-
-
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-white/20">
       {/* Background Gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-purple-900/10 rounded-full blur-[120px] animate-pulse-slow" />
-        <div className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] bg-blue-900/10 rounded-full blur-[120px]" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2 }}
+          className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-purple-900/10 rounded-full blur-[120px]"
+        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 2, delay: 0.5 }}
+          className="absolute top-[40%] -right-[10%] w-[60vw] h-[60vw] bg-blue-900/10 rounded-full blur-[120px]"
+        />
       </div>
 
       <div className="relative max-w-3xl mx-auto px-6 py-12 md:py-20">
 
         {/* HEADER */}
-        <header className="mb-12 md:mb-16 animate-fade-in">
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-12 md:mb-16"
+        >
           <div className="flex justify-between items-start mb-8">
             <div>
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white mb-2">
@@ -53,12 +65,16 @@ export function Home() {
 
           {/* Last Workout Summary */}
           <LastWorkoutSummary categories={categories} />
-        </header>
+        </motion.header>
 
-        <main>
+        <motion.main
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        >
           {/* CATEGORY GRID */}
           <CategoryGrid categories={categories} />
-        </main>
+        </motion.main>
 
         {/* Clear Cache Confirmation Modal */}
         <ClearLocalModal showClearCacheConfirm={showClearCacheConfirm} setShowClearCacheConfirm={setShowClearCacheConfirm} />

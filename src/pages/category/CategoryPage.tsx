@@ -169,7 +169,6 @@ export default function CategoryPage() {
       <div className="relative max-w-3xl mx-auto px-6 py-12 md:py-20">
         <div className="animate-fade-in">
           {/* Detail Navigation Header */}
-          {/* Detail Navigation Header */}
           <CategoryDetailHeader
             activeCategoryConfig={activeCategoryConfig}
             records={records}
@@ -205,7 +204,7 @@ export default function CategoryPage() {
                 setInitialExerciseForForm('')
                 setShowAddForm(true)
               }}
-              className="w-full py-4 mb-8 rounded-2xl border border-dashed border-white/20 text-gray-500 hover:text-white hover:border-white/40 hover:bg-white/[0.02] transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full py-4 mb-8 rounded-2xl border border-dashed border-white/20 text-gray-500 hover:text-white hover:border-white/40 hover:bg-white/2 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <Icons.Plus className="w-5 h-5" />
               <span>添加新记录</span>

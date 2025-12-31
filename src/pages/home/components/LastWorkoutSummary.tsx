@@ -3,6 +3,8 @@ import { Icons } from '@/components/Icons'
 import type { WorkoutRecord, WorkoutCategory } from '@/types/workout'
 import { formatDate } from '@/utils/date'
 import { useWorkoutStore } from '@/stores/workoutStore'
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { motion } from 'framer-motion'
 
 export interface CategoryConfig {
   id: WorkoutCategory
@@ -75,27 +77,36 @@ export const LastWorkoutSummary: React.FC<LastWorkoutSummaryProps> = ({ categori
   }
 
   return (
-    <div className="bg-white/3 border border-white/5 rounded-2xl p-5 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {records.length > 0 ? 'Last Workout' : 'Status'}
-        </span>
-        <span className="text-xs text-gray-600 font-mono">{dateDisplay}</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-xl ${iconBgClass} ${iconColorClass}`}>
-          <IconComponent className="w-5 h-5" />
-        </div>
-        <div>
-          <div className="text-lg font-bold text-white">
-            {label}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+    >
+      <Card className="bg-white/[0.03] border-white/5 backdrop-blur-sm rounded-2xl overflow-hidden">
+        <CardHeader className="p-5 pb-2 flex flex-row items-center justify-between space-y-0">
+          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            {records.length > 0 ? 'Last Workout' : 'Status'}
+          </span>
+          <span className="text-xs text-gray-600 font-mono">{dateDisplay}</span>
+        </CardHeader>
+        <CardContent className="p-5 pt-0">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${iconBgClass} ${iconColorClass} transition-transform duration-300 hover:scale-110`}>
+              <IconComponent className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-xl font-bold text-white tracking-tight">
+                {label}
+              </div>
+              <div className={`text-sm ${textColor} flex items-center gap-2 mt-0.5`}>
+                <span className="text-base">{emoji}</span>
+                <span className="font-medium">{message}</span>
+              </div>
+            </div>
           </div>
-          <div className={`text-sm ${textColor} flex items-center gap-1.5`}>
-            <span>{emoji}</span>
-            <span>{message}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
